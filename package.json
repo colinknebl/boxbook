@@ -1,0 +1,21 @@
+{
+  "name": "boxbook",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "9.0.6",
+    "node-fetch": "^2.6.0",
+    "react": "16.9.0",
+    "react-dom": "16.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.5",
+    "@types/styled-jsx": "^2.2.8",
+    "typescript": "^3.6.3"
+  }
+}
