@@ -93,7 +93,8 @@ const Home = (props: any) => {
 
 Home.getInitialProps = async ({ req }) => {
   console.log("getInitialProps on server");
-  const res = await fetch("http://localhost:3000/api/v1/users");
+  // const res = await fetch("http://localhost:3000/api/v1/users");
+  const res = await fetch("https://boxbook.colinknebl.now.sh/api/v1/users");
   const json = await res.json();
   console.log("fetched users, returning:", { users: json });
   return { users: json };

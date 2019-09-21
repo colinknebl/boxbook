@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "deploy": "now --prod"
   },
   "dependencies": {
     "next": "9.0.6",
@@ -16,6 +17,7 @@
   "devDependencies": {
     "@types/node": "^12.7.5",
     "@types/styled-jsx": "^2.2.8",
+    "now": "^16.2.0",
     "typescript": "^3.6.3"
   }
 }
