@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "now --prod"
+    "deploy": "now --prod",
+    "test": "jest"
   },
   "dependencies": {
     "next": "9.0.6",
@@ -15,8 +16,13 @@
     "react-dom": "16.9.0"
   },
   "devDependencies": {
+    "@types/enzyme": "^3.10.3",
+    "@types/jest": "^24.0.18",
     "@types/node": "^12.7.5",
     "@types/styled-jsx": "^2.2.8",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
+    "jest": "^24.9.0",
     "now": "^16.2.0",
     "typescript": "^3.6.3"
   }
