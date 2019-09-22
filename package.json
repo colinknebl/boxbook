@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "deploy": "now --prod",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "next": "9.0.6",
