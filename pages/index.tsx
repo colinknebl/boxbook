@@ -1,10 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import Nav from '../components/nav';
 import fetch from 'node-fetch';
+import { withApollo } from '../graphql/apollo/client';
+import { useQuery, useMutation } from '@apollo/react-hooks';
+
+import gql from 'graphql-tag';
+const GET_USERS = gql`
+    query UsersQuery {
+        users {
+            name
+            id
+        }
+    }
+`;
+
+const CREATE_USER = gql`
+    mutation CreateUser($name: String!) {
+        createUser(name: $name) {
+            id
+            name
+        }
+    }
+`;
 
 const Home = (props: any) => {
-    console.log('props', props);
+    const [name, setName] = useState('');
+
+    const query = useQuery(GET_USERS);
+
+    const [createUser, result] = useMutation(CREATE_USER);
 
     return (
         <div>
@@ -13,6 +38,22 @@ const Home = (props: any) => {
             </Head>
 
             <Nav />
+
+            <form
+                onSubmit={e => {
+                    e.preventDefault();
+                    createUser({ variables: { name } });
+                }}
+            >
+                <input
+                    type='text'
+                    value={name}
+                    onChange={e => {
+                        setName(e.target.value);
+                    }}
+                />
+                <button>Create User</button>
+            </form>
 
             <span>Name: {props.users.name}</span>
 
@@ -99,12 +140,12 @@ const Home = (props: any) => {
 };
 
 Home.getInitialProps = async ({ req }) => {
-    console.log('getInitialProps on server');
+    // console.log('getInitialProps on server');
     // const res = await fetch('http://localhost:3000/api/v1/users');
     const res = await fetch('https://boxbook.colinknebl.now.sh/api/v1/users');
     const json = await res.json();
-    console.log('fetched users, returning:', { users: json });
+    // console.log('fetched users, returning:', { users: json });
     return { users: json };
 };
 
-export default Home;
+export default withApollo(Home);
