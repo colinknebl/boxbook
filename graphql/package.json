@@ -1,0 +1,12 @@
+{
+    "name": "boxbook_backend",
+    "version": "1.0.0",
+    "description": "The Backend for BoxBook",
+    "main": "index.ts",
+    "scripts": {
+        "dev": "cd prisma && docker-compose up -d",
+        "prisma:deploy": "prisma deploy"
+    },
+    "author": "Colin Knebl",
+    "license": "ISC"
+}
