@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
-import Nav from '../components/nav';
+import Nav from '../components/ui/nav';
 import { withApollo } from '../graphql/apollo/client';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 
