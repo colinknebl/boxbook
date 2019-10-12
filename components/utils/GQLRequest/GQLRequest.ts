@@ -46,6 +46,12 @@ export class GQLRequest<T> implements IGQLRequest<T> {
             body: JSON.stringify(options),
         });
 
-        return await response.json();
+        const parsed: { data?: T; error?: Error } = await response.json();
+
+        if (parsed && parsed.data) {
+            return parsed.data;
+        } else {
+            throw new Error('Error with GQLRequest: ' + parsed.error.message);
+        }
     }
 }
