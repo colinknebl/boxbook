@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Head from 'next/head';
 import Nav from '../components/ui/nav';
 import { withApollo } from '../graphql/apollo/client';
 import { useQuery, useMutation } from '@apollo/react-hooks';
@@ -41,10 +40,6 @@ const Home = (props: any) => {
 
     return (
         <div>
-            <Head>
-                <title>Home</title>
-            </Head>
-
             <Nav />
 
             <form

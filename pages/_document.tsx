@@ -1,5 +1,12 @@
-import Document, { DocumentContext } from 'next/document';
+import Document, {
+    DocumentContext,
+    Html,
+    Main,
+    Head,
+    NextScript,
+} from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
+import { default as AppHead } from '../components/ui/Head';
 
 export default class MyDocument extends Document {
     static async getInitialProps(ctx: DocumentContext) {
@@ -26,5 +33,20 @@ export default class MyDocument extends Document {
         } finally {
             sheet.seal();
         }
+    }
+
+    render() {
+        return (
+            <Html>
+                <head>
+                    <Head />
+                    <AppHead />
+                </head>
+                <body>
+                    <Main />
+                    <NextScript />
+                </body>
+            </Html>
+        );
     }
 }
