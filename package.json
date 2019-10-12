@@ -6,6 +6,8 @@
         "start:graphql": "cd graphql && npm run dev",
         "run:client": "next dev",
         "dev": "npm-run-all start:graphql run:client",
+        "docker:stop": "docker stop $(docker ps -a -q)",
+        "docker:rm": "docker rm $(docker ps -a -q)",
         "build": "next build",
         "start": "next start",
         "deploy:dev": "now --dev",
