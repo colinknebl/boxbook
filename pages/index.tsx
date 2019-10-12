@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import Nav from '../components/nav';
-import fetch from 'node-fetch';
 import { withApollo } from '../graphql/apollo/client';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 
@@ -54,8 +53,6 @@ const Home = (props: any) => {
                 />
                 <button>Create User</button>
             </form>
-
-            <span>Name: {props.users.name}</span>
 
             <div className='hero'>
                 <h1 className='title'>Welcome to Next.js!</h1>
@@ -139,13 +136,7 @@ const Home = (props: any) => {
     );
 };
 
-Home.getInitialProps = async ({ req }) => {
-    // console.log('getInitialProps on server');
-    // const res = await fetch('http://localhost:3000/api/v1/users');
-    const res = await fetch('https://boxbook.colinknebl.now.sh/api/v1/users');
-    const json = await res.json();
-    // console.log('fetched users, returning:', { users: json });
-    return { users: json };
-};
+// Home.getInitialProps = async ({ req }) => {
+// };
 
 export default withApollo(Home);
