@@ -75,7 +75,7 @@ Prisma is used for creating the Data Model, and the simple client API that is ge
 -   Add New Query
 
     1. Add query signature under Query type to ./graphql/types/typeDefs.ts
-    2. Add the query resolver to ./resolvers/queries.ts (NOTE: the resolver name must match the name added to the type definition in step 1)
+    2. Add the query resolver to ./resolvers/queries.ts (NOTE: the resolver name must match the name added to the type definition in step 1, and don't forget the fragment if performing deep queries)
     3. Test query in [playground](http://localhost:3000/api/v1/graphql)
     4. Add query in client
        <br />
@@ -83,10 +83,11 @@ Prisma is used for creating the Data Model, and the simple client API that is ge
 
     ```tsx
     import gql from 'graphql-tag';
+    import { NameFragment } from './graphql/types/fragments';
     const GET_USERS = gql`
         query UsersQuery {
             users {
-                name
+                name ${NameFragment}
                 id
             }
         }
@@ -102,7 +103,7 @@ Prisma is used for creating the Data Model, and the simple client API that is ge
 -   Add New Mutation
 
     1. Add mutation signature under Mutation type to .graphql//types/typeDefs.ts
-    2. Add the mutation resolver to ./resolvers/mutations.ts (NOTE: the resolver name must match the name added to the type definition in step 1)
+    2. Add the mutation resolver to ./resolvers/mutations.ts (NOTE: the resolver name must match the name added to the type definition in step 1, and don't forget the fragment if performing deep queries)
     3. Test mutation in [playground](http://localhost:3000/api/v1/graphql)
     4. Add mutation in client
        <br />
@@ -110,11 +111,12 @@ Prisma is used for creating the Data Model, and the simple client API that is ge
 
     ```tsx
     import gql from 'graphql-tag';
+    import { NameFragment } from './graphql/types/fragments';
     const CREATE_USER = gql`
         mutation CreateUser($name: String!) {
             createUser(name: $name) {
                 id
-                name
+                name ${NameFragment}
             }
         }
     `;

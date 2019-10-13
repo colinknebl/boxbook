@@ -41,6 +41,13 @@ export default class MyDocument extends Document {
                 <head>
                     <Head />
                     <AppHead />
+                    <script
+                        id='session'
+                        type='application/json'
+                        dangerouslySetInnerHTML={{
+                            __html: JSON.stringify({ foo: 'bar' }),
+                        }}
+                    />
                 </head>
                 <body>
                     <Main />
