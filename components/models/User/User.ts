@@ -24,6 +24,9 @@ const UserQuery: string = `
 `;
 
 export class User extends Person implements UserInterface {
+    /**
+    /// **** Constructor ***********************************************
+     */
     static Query = UserQuery;
     constructor(user: any) {
         super(user.id, user.name, user.email, user.phone, user.image);
@@ -58,16 +61,14 @@ export class User extends Person implements UserInterface {
         }
     }
 
-    static async Fetch(userID: string) {
-        const req = new GQLRequest<any>();
-        const res = await req.get({
-            query: User.Query,
-            variables: { id: userID },
-        });
-        const user = new User(res.user);
-        return user;
-    }
-
+    /**
+    /// **** Properties ************************************************
+     */
+    // ***** Static Props **********************************************
+    // *****************************************************************
+    // ***** Private Props *********************************************
+    // *****************************************************************
+    // ***** Protected Props *******************************************
     public username: string;
     public reserved: OrgEventsCollection;
     public organizations: Organization[];
@@ -81,4 +82,28 @@ export class User extends Person implements UserInterface {
         id: string;
     };
     public createdAt: Date;
+    // *****************************************************************
+    // ***** Public Props & Getters/Setters ****************************
+    // *****************************************************************
+
+    /**
+    /// **** Methods ***************************************************
+     */
+    // ***** Static Methods ********************************************
+    static async Fetch(userID: string) {
+        const req = new GQLRequest<any>();
+        const res = await req.get({
+            query: User.Query,
+            variables: { id: userID },
+        });
+        const user = new User(res.user);
+        return user;
+    }
+    // *****************************************************************
+    // ***** Private Methods *******************************************
+    // *****************************************************************
+    // ***** Protected Methods *****************************************
+    // *****************************************************************
+    // ***** Public Methods ********************************************
+    // *****************************************************************
 }
