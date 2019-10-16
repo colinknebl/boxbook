@@ -1,4 +1,5 @@
 import config from '../Config/config';
+import { User } from '../../models/User';
 
 interface IRequestOptions {
     operationName?: string;
@@ -37,10 +38,15 @@ export class GQLRequest<T> implements IGQLRequest<T> {
     private async _sendNetworkRequest(
         options: IMutationOptions | IQueryOptions
     ): Promise<T> {
+        const headers = {
+            ...GQLRequest.Headers,
+            // Authorization:
+            //     'Bearer ' + window.localStorage.getItem(User.TokenKey),
+        };
         const response = await fetch(GQLRequest.URI, {
             method: GQLRequest.Method,
             mode: GQLRequest.Mode,
-            headers: GQLRequest.Headers,
+            headers,
             body: JSON.stringify(options),
         });
 

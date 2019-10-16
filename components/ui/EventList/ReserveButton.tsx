@@ -4,9 +4,15 @@ import classnames from 'classnames';
 import { OrgEvent } from '../../models/OrgEvent/OrgEvent';
 import { User } from '../../models/User/User';
 
+export type ReserveButtonText =
+    | 'Confirm'
+    | 'Reserve'
+    | 'Reserved'
+    | 'Unreserve';
 interface IProps {
     event: OrgEvent;
     user: User;
+    onClick(text: ReserveButtonText, event: OrgEvent): void;
 }
 
 const StyledReserveButton = styled.button`
@@ -19,6 +25,11 @@ const StyledReserveButton = styled.button`
     &[data-text='Reserved'] {
         background: var(--primary-color);
         color: var(--white);
+    }
+
+    &[data-text='Reserved']:hover {
+        color: var(--primary-color);
+        background: inherit;
     }
 
     &[data-text='Unreserve'] {
@@ -37,20 +48,20 @@ const StyledReserveButton = styled.button`
     }
 `;
 
-function ReserveButton({ event, user }: IProps) {
+function ReserveButton({ event, user, onClick }: IProps) {
     const getReservedText = () => {
         return event.isReserved ? 'Reserved' : 'Reserve';
     };
     const [text, setText] = useState(getReservedText());
     const button = useRef<HTMLButtonElement>(null);
 
-    const onClick = () => {
+    const clickHandler = () => {
         if (text === 'Confirm') {
             setText('Reserved');
-            event.reserve(user.id);
+            onClick('Reserve', event);
         } else if (text === 'Unreserve') {
             setText('Reserve');
-            event.unreserve(user.id);
+            onClick('Unreserve', event);
         } else if (text === 'Reserve') {
             setText('Confirm');
         } else if (text === 'Reserved') {
@@ -63,7 +74,7 @@ function ReserveButton({ event, user }: IProps) {
                 reserved: event.isReserved,
             })}
             ref={button}
-            onClick={onClick}
+            onClick={clickHandler}
             data-text={text}
         >
             {text}

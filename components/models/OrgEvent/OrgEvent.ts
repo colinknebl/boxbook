@@ -11,7 +11,6 @@ interface OrgEventInterface {
     date: Date;
     hourDuration: number;
     image: string;
-    organization: Organization;
     eventType: string;
 
     toggleReserved(reserved?: boolean): void;
@@ -19,10 +18,10 @@ interface OrgEventInterface {
 
 const ReserveEventMutation: string = `
     mutation reserveUser($userID: ID!, $eventID: ID!) {
-        reserveUser(
+        reserveUser(data: {
             userID: $userID
             eventID: $eventID
-            ) {
+        }) {
                 attendees {
                 name {
                     first
@@ -34,10 +33,10 @@ const ReserveEventMutation: string = `
 
 const UnreserveEventMutation: string = `
     mutation unreserveUser($userID: ID!, $eventID: ID!) {
-        unreserveUser(
+        unreserveUser(data: {
             userID: $userID
             eventID: $eventID
-            ) {
+        }) {
                 attendees {
                 name {
                     first
@@ -51,14 +50,12 @@ export class OrgEvent implements OrgEventInterface {
     static ReserveEventMutation = ReserveEventMutation;
     static UnreserveEventMutation = UnreserveEventMutation;
 
-    constructor(event: any, org: Organization, reserved: boolean = false) {
+    constructor(event: any, user: User) {
         this.id = event.id;
         this.date = new Date(event.date);
         this.hourDuration = event.hourDuration;
         this.image = event.image;
-        this.organization = org;
         this.eventType = event.eventType;
-        this._isReserved = Boolean(reserved);
         this.name = event.name;
 
         this.coordinator = new Person(
@@ -77,6 +74,16 @@ export class OrgEvent implements OrgEventInterface {
                 },
                 [] as User[]
             );
+        } else {
+            this.attendees = [];
+        }
+
+        if (this.attendees.length) {
+            this._isReserved = this.attendees.some(
+                attendee => attendee.id === user.id
+            );
+        } else {
+            this._isReserved = false;
         }
     }
 
@@ -86,7 +93,6 @@ export class OrgEvent implements OrgEventInterface {
     public date: Date;
     public hourDuration: number;
     public image: string;
-    public organization: Organization;
     public eventType: string;
     public name: string;
     public _isReserved: boolean = false;
@@ -107,31 +113,35 @@ export class OrgEvent implements OrgEventInterface {
         }
     }
 
-    public async unreserve(userID: string) {
+    public async unreserve(user: User) {
         const req = new GQLRequest<OrgEvent>();
         const res = await req.set({
             query: OrgEvent.UnreserveEventMutation,
             variables: {
-                userID,
+                userID: user.id,
                 eventID: this.id,
             },
             operationName: 'unreserveUser',
         });
         this._isReserved = false;
+        this.attendees = this.attendees.filter(
+            attendee => attendee.id !== user.id
+        );
         return this;
     }
 
-    public async reserve(userID: string) {
+    public async reserve(user: User) {
         const req = new GQLRequest<OrgEvent>();
         const res = await req.set({
             query: OrgEvent.ReserveEventMutation,
             variables: {
-                userID,
+                userID: user.id,
                 eventID: this.id,
             },
             operationName: 'reserveUser',
         });
         this._isReserved = true;
+        this.attendees.push(user);
         return this;
     }
 }

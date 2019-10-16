@@ -38,7 +38,7 @@ export const OrganizationFragment = `{
         email
         phone
     }
-    events {
+    events(orderBy: date_ASC) {
         id
         date
         name
@@ -68,7 +68,7 @@ export const UserFragment = `{
     image
     username
     password
-    reserved {
+    reserved(orderBy: date_ASC) {
         id
         date
         name

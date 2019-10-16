@@ -1,7 +1,8 @@
 import classnames from 'classnames';
 import styled from 'styled-components';
+import { Viewing } from './EventList';
 
-const WeekDays = [
+export const WeekDays = [
     'Sunday',
     'Monday',
     'Tuesday',
@@ -42,14 +43,21 @@ interface IProps {
     day: Date;
     selected: boolean;
     index: number;
+    viewing: Viewing;
     onClick(num: number): void;
 }
 
-export default function Day({ day, selected, onClick, index }: IProps) {
+export default function Day({
+    day,
+    selected,
+    onClick,
+    index,
+    viewing,
+}: IProps) {
     return (
         <StyledDay
             className={classnames({
-                selected: selected,
+                selected: selected && viewing !== 'Reserved',
             })}
             onClick={() => onClick(index)}
         >

@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Day from './DatePickerDay';
+import { Viewing } from './EventList';
 
 const StyledDatePicker = styled.div`
     border-top: 2px solid var(--secondary-color);
@@ -12,12 +13,13 @@ const StyledDatePicker = styled.div`
 interface IProps {
     dates: Date[];
     selectedDay: number;
+    viewing: Viewing;
     setSelectedDay(num: number): void;
 }
 
 class DatePicker extends React.PureComponent<IProps> {
     render() {
-        const { dates, selectedDay, setSelectedDay } = this.props;
+        const { dates, selectedDay, setSelectedDay, viewing } = this.props;
         return (
             <StyledDatePicker>
                 {dates.map((date, index) => (
@@ -26,6 +28,7 @@ class DatePicker extends React.PureComponent<IProps> {
                         day={date}
                         selected={index === selectedDay}
                         index={index}
+                        viewing={viewing}
                         onClick={setSelectedDay}
                     />
                 ))}

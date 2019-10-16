@@ -29,7 +29,10 @@ interface IAddress {
 }
 
 export class Organization implements OrganizationInterface {
-    constructor(org: any) {
+    /**
+    /// **** Constructor ***********************************************
+     */
+    constructor(org: any, user: User) {
         this.id = org.id;
         this.code = org.code;
         this.address = org.address;
@@ -40,20 +43,20 @@ export class Organization implements OrganizationInterface {
         this.settings = org.settings;
         this._createdAt = org.createdAt;
 
-        if (Array.isArray(org.events)) {
-            const events = org.events.reduce(
-                (events: OrgEvent[], event: OrgEvent) => {
-                    events.push(new OrgEvent(event, this));
-                    return events;
-                },
-                [] as OrgEvent[]
-            );
-            this.events = new OrgEventsCollection(events);
-        }
+        this.events = new OrgEventsCollection(org.events || [], user);
     }
 
+    /**
+    /// **** Properties ************************************************
+     */
+    // ***** Static Props **********************************************
+    // *****************************************************************
+    // ***** Private Props *********************************************
     private _createdAt: string;
-
+    // *****************************************************************
+    // ***** Protected Props *******************************************
+    // *****************************************************************
+    // ***** Public Props & Getters/Setters ****************************
     public id: string;
     public code: string;
     public address: IAddress;
@@ -65,4 +68,43 @@ export class Organization implements OrganizationInterface {
     public settings: {
         id: string;
     };
+    // *****************************************************************
+
+    /**
+    /// **** Methods ***************************************************
+     */
+    // ***** Static Methods ********************************************
+    // *****************************************************************
+    // ***** Private Methods *******************************************
+    // *****************************************************************
+    // ***** Protected Methods *****************************************
+    // *****************************************************************
+    // ***** Public Methods ********************************************
+    public reserveForEvent(event: OrgEvent, user: User) {
+        return this.events.addUserToEvent(event, user);
+    }
+
+    // *****************************************************************
+
+    public unreserveFromEvent(event: OrgEvent, user: User) {
+        return this.events.removeUserFromEvent(event, user);
+    }
+
+    // *****************************************************************
+
+    /**
+     * Return a list of events the user is registered for
+     */
+    public getReserved(user: User) {
+        return this.events.getReserved(user);
+    }
+
+    // *****************************************************************
+
+    public getEventsByDates(dates: Date[], selectedDay: number): OrgEvent[] {
+        const selected = dates[selectedDay];
+        return this.events.filterByDate(selected);
+    }
+
+    // *****************************************************************
 }
