@@ -1,0 +1,126 @@
+type Name {
+    id: ID! @id
+    first: String!
+    last: String!
+}
+
+type Person {
+    id: ID! @id
+    email: String! @unique
+    image: String
+    name: Name! @relation(link: INLINE)
+    phone: String
+    createdAt: DateTime! @createdAt
+}
+
+enum EventTypes {
+    CLASS
+}
+
+type OrgEvent {
+    id: ID! @id
+    name: String!
+    attendees: [User]!
+    coordinator: Person! @relation(link: INLINE)
+    date: DateTime!
+    eventType: [EventTypes!]!
+    hourDuration: Float!
+    image: String
+    organization: Organization! @relation(link: INLINE)
+    createdAt: DateTime! @createdAt
+}
+
+type Address {
+    id: ID! @id
+    street1: String
+    street2: String
+    street3: String
+    city: String
+    state: String
+    country: String
+    postCode: String
+}
+
+type OrgSettings {
+    id: ID! @id
+}
+
+type Organization {
+    id: ID! @id
+    code: String! @unique
+    address: Address @relation(link: INLINE)
+    admins: [User!]!
+    director: Person! @relation(link: INLINE)
+    events: [OrgEvent]!
+    image: String
+    name: String!
+    settings: OrgSettings @relation(link: INLINE)
+    createdAt: DateTime! @createdAt
+}
+
+type UserSettings {
+    id: ID! @id
+}
+
+type LoggedLift {
+    id: ID! @id
+    weight: Int!
+    date: DateTime!
+    reps: [Int!]!
+    sets: Int!
+    createdAt: DateTime! @createdAt
+}
+
+type Lift {
+    id: ID! @id
+    name: String
+    history: [LoggedLift]! @relation(name: "HistoricLift", link: INLINE)
+    oneRepMax: LoggedLift @relation(name: "OneRMLift", link: INLINE)
+}
+
+type Workout {
+    id: ID! @id
+    name: String!
+    instructions: String!
+    createdAt: DateTime! @createdAt
+}
+
+enum ScoreTypes {
+    TIME
+    REPS
+    ROUNDS_TIME
+    ROUNDS_REPS
+}
+
+type LoggedWorkout {
+    id: ID! @id
+    workout: Workout! @relation(link: INLINE)
+    score: String!
+    scoreType: ScoreTypes
+    createdAt: DateTime! @createdAt
+}
+
+type UserLog {
+    id: ID! @id
+    lifts: [Lift]! @relation(link: INLINE)
+    workouts: [LoggedWorkout]! @relation(link: INLINE)
+}
+
+type User {
+    id: ID! @id
+    name: Name! @relation(link: INLINE)
+    email: String! @unique
+    phone: String
+    image: String
+    # user specific
+    username: String! @unique
+    password: String!
+    reserved: [OrgEvent]! @relation(link: INLINE)
+    organizations: [Organization] @relation(link: INLINE)
+    postCode: String
+    settings: UserSettings @relation(link: INLINE)
+    isAdmin: Boolean
+    friends: [User]! @relation(link: INLINE)
+    log: UserLog! @relation(link: INLINE)
+    createdAt: DateTime! @createdAt
+}

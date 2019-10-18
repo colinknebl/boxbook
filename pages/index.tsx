@@ -1,8 +1,6 @@
 import React from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { withApollo } from '../graphql/apollo/client';
-
-import { Users } from '../components/collections/Usesr';
+import { withApollo } from '../src/graphql/apollo/client';
 
 import gql from 'graphql-tag';
 import Link from 'next/link';

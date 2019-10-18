@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "start:graphql": "cd graphql && npm run dev",
+        "start:graphql": "cd src/graphql && npm run dev",
         "run:client": "next dev",
         "dev": "npm-run-all start:graphql run:client",
         "docker:stop": "docker stop $(docker ps -a -q)",

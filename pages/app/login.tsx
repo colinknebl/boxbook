@@ -1,4 +1,4 @@
-import Login from '../../components/ui/Login';
+import Login from '../../src/components/ui/Login';
 
 interface IProps {}
 

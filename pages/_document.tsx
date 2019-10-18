@@ -6,7 +6,7 @@ import Document, {
     NextScript,
 } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
-import { default as AppHead } from '../components/ui/Head';
+import { default as AppHead } from '../src/components/ui/Head';
 
 export default class MyDocument extends Document {
     static async getInitialProps(ctx: DocumentContext) {
@@ -41,13 +41,6 @@ export default class MyDocument extends Document {
                 <head>
                     <Head />
                     <AppHead />
-                    <script
-                        id='session'
-                        type='application/json'
-                        dangerouslySetInnerHTML={{
-                            __html: JSON.stringify({ foo: 'bar' }),
-                        }}
-                    />
                 </head>
                 <body>
                     <Main />

@@ -1,7 +1,7 @@
 import { ApolloServer, Config } from 'apollo-server-micro';
 import jwt from 'jsonwebtoken';
-import { typeDefs, resolvers } from '../../../graphql';
-import { TokenData } from '../../../graphql/resolvers/mutations';
+import { typeDefs, resolvers } from '../../../src/graphql';
+import { TokenData } from '../../../src/graphql/resolvers/mutations';
 import { TOKEN_SIGNATURE } from '../../../.env/env';
 import { NextApiRequest, NextApiResponse } from 'next';
 
