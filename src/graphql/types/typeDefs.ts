@@ -479,12 +479,6 @@ export const typeDefs = gql`
         expiration: Int!
     }
 
-    type Query {
-        user(id: ID): User!
-        users: [User!]!
-        name(id: ID): Name!
-    }
-
     input CreateUserData {
         firstName: String!
         lastName: String!
@@ -504,8 +498,23 @@ export const typeDefs = gql`
         eventID: ID!
     }
 
+    input DeleteUserData {
+        id: ID!
+    }
+
+    input UserQueryWhere {
+        id: ID!
+    }
+
+    type Query {
+        user(where: UserQueryWhere): User!
+        users: [User!]!
+        name(id: ID): Name!
+    }
+
     type Mutation {
         createUser(data: CreateUserData!): User!
+        deleteUser(data: DeleteUserData!): User!
         reserveUser(data: ReserveUnreserveData!): OrgEvent!
         unreserveUser(data: ReserveUnreserveData!): OrgEvent!
         login(data: LoginData!): AuthData

@@ -3,12 +3,23 @@ import App, { AppContext } from 'next/app';
 import Head from '../src/components/ui/Head';
 
 import GlobalStyles from '../src/components/ui/GlobalStyles';
-import { NavBar } from '../src/components/ui/NavBar';
+import Nav from '../src/components/ui/Nav';
 import { User } from '../src/components/models/User';
-import { getTokenFromCookie } from '../src/components/utils/Auth/getTokenFromCookie';
-import MainAppContext from '../src/components/ui/context/MainAppContext';
+import { getValidUser } from '../src/components/utils/Auth/getValidUser';
+import MainAppContext, {
+    IMainAppContext,
+} from '../src/components/ui/context/MainAppContext';
+import { redirect } from '../src/components/utils/redirect';
 
-class MyApp extends App<{ user: User; isClient: boolean }> {
+interface IProps {
+    user: any;
+}
+
+interface IState {
+    user: User;
+}
+
+class MyApp extends App<IProps, IState> {
     // Only uncomment this method if you have blocking data requirements for
     // every single page in your application. This disables the ability to
     // perform automatic static optimization, causing every page in your app to
@@ -18,21 +29,13 @@ class MyApp extends App<{ user: User; isClient: boolean }> {
         // calls page's `getInitialProps` and fills `appProps.pageProps`
         const appProps = await App.getInitialProps(appContext);
 
-        let user: User = null;
+        let user = null;
 
         try {
-            if (appContext.ctx.req) {
-                const token = getTokenFromCookie(appContext);
-                /**
-                 3. If here, the token is valid - sets the userID, email, and isAuth 
-                    keys on the context object which is then available in the GraphQL 
-                    queries and mutations 'context' argument (3rd arg)
-                 */
-                user = await User.Fetch(token.userID);
-            }
+            user = await getValidUser(appContext.ctx.req);
         } catch (err) {}
 
-        return { ...appProps, user, isClient: Boolean(appContext.ctx.req) };
+        return { ...appProps, user };
     }
 
     state = {
@@ -40,26 +43,43 @@ class MyApp extends App<{ user: User; isClient: boolean }> {
     };
 
     render() {
-        const { Component, pageProps, isClient } = this.props;
+        const { Component, pageProps } = this.props;
+
+        console.log('rendering page state', this.state);
+        console.log('rendering page props', this.props);
 
         return (
             <>
                 <GlobalStyles />
                 <Head />
-                <MainAppContext.Provider value={{ login: this.login }}>
+                <MainAppContext.Provider value={this._getContextValue()}>
                     <main id='App' className='App'>
-                        <NavBar />
+                        <Nav />
                         <div className='component-container'>
-                            <Component
-                                {...pageProps}
-                                user={this.state.user}
-                                isClient={isClient}
-                            />
+                            <Component {...pageProps} user={this._getUser()} />
                         </div>
                     </main>
                 </MainAppContext.Provider>
             </>
         );
+    }
+
+    private _getUser(): User {
+        let user = this.state.user || this.props.user;
+
+        if (user && !(user instanceof User)) {
+            user = new User(user);
+        }
+
+        return user;
+    }
+
+    private _getContextValue(): IMainAppContext {
+        return {
+            login: this.login,
+            logout: this.logout,
+            user: this._getUser(),
+        };
     }
 
     public componentDidMount() {
@@ -70,17 +90,32 @@ class MyApp extends App<{ user: User; isClient: boolean }> {
         }
     }
 
-    public login = async (email: string, password: string) => {
-        let success: boolean = false;
-        const user = await User.Login(email, password);
-        if (user) {
+    public logout = () => {
+        try {
+            User.Logout();
+            redirect(null, '/app/login');
             this.setState({
-                user,
-                organization: user.organizations[0],
+                user: null,
             });
-            success = true;
+            return true;
+        } catch (error) {
+            return false;
         }
-        return success;
+    };
+
+    public login = async (
+        email: string,
+        password: string
+    ): Promise<{ user: User; errors: Error[] }> => {
+        const data = await User.Login(email, password);
+        if (data.user) {
+            this.setState({
+                user:
+                    data.user instanceof User ? data.user : new User(data.user),
+                organization: data.user.organizations[0],
+            });
+        }
+        return data;
     };
 }
 

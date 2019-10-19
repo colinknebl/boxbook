@@ -1,8 +1,7 @@
 import { User } from '../User';
 import { Person } from '../Person';
-import { Organization } from '../Organization';
-import { OrgEventFragment } from '../../../graphql/types/fragments';
-import { GQLRequest } from '../../utils/GQLRequest';
+import { DataRequest } from '../../utils/DataRequest/DataRequest';
+import { operationName } from '@apollo/react-common';
 
 interface OrgEventInterface {
     id: string;
@@ -114,34 +113,42 @@ export class OrgEvent implements OrgEventInterface {
     }
 
     public async unreserve(user: User) {
-        const req = new GQLRequest<OrgEvent>();
-        const res = await req.set({
+        const req = new DataRequest<OrgEvent>({
             query: OrgEvent.UnreserveEventMutation,
             variables: {
                 userID: user.id,
                 eventID: this.id,
             },
             operationName: 'unreserveUser',
+            errorMessage:
+                'Uh Oh, something went wrong! Unreserving your spot in the event was unsuccessful.',
         });
-        this._isReserved = false;
-        this.attendees = this.attendees.filter(
-            attendee => attendee.id !== user.id
-        );
-        return this;
+        await req.fetch();
+        if (req.success) {
+            this._isReserved = false;
+            this.attendees = this.attendees.filter(
+                attendee => attendee.id !== user.id
+            );
+            return this;
+        }
     }
 
     public async reserve(user: User) {
-        const req = new GQLRequest<OrgEvent>();
-        const res = await req.set({
+        const req = new DataRequest<OrgEvent>({
             query: OrgEvent.ReserveEventMutation,
             variables: {
                 userID: user.id,
                 eventID: this.id,
             },
             operationName: 'reserveUser',
+            errorMessage:
+                'Uh Oh, something went wrong! Unable to reserve your spot in the event!',
         });
-        this._isReserved = true;
-        this.attendees.push(user);
-        return this;
+        await req.fetch();
+        if (req.success) {
+            this._isReserved = true;
+            this.attendees.push(user);
+            return this;
+        }
     }
 }

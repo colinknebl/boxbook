@@ -5,7 +5,9 @@ const GlobalStyles = createGlobalStyle`
         --primary-color: rgba(214, 181, 0, 1);
         --primary-color--hover: rgba(244, 207, 0, 1);
         --secondary-color: rgba(0, 35, 132, 1);
+        --secondary-color--hover: rgba(2, 48, 176, 1);
         --tertiary-color: rgba(35, 133, 216, 1);
+        --tertiary-color--hover: rgba(58, 161, 248, 1);
         --confirm-color: rgba(170, 255, 118, 1);
         --confirm-color--hover: rgba(128, 213, 76, 1);
         --cancel-color: rgba(255, 73, 73, 1);

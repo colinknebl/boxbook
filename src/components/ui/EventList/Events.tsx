@@ -24,11 +24,19 @@ function Events({ events, user, onClick, viewing }: IProps) {
     }
 
     if (events.length === 0) {
-        return (
-            <StyledEvents className='no-events'>
-                <p>There are no events scheduled today</p>
-            </StyledEvents>
-        );
+        if (viewing === 'Scheduled') {
+            return (
+                <StyledEvents className='no-events'>
+                    <p>There are no events scheduled today</p>
+                </StyledEvents>
+            );
+        } else {
+            return (
+                <StyledEvents className='no-events'>
+                    <p>You have not reserved a place in any events</p>
+                </StyledEvents>
+            );
+        }
     }
 
     return (

@@ -1,9 +1,7 @@
 import { ApolloServer, Config } from 'apollo-server-micro';
-import jwt from 'jsonwebtoken';
-import { typeDefs, resolvers } from '../../../src/graphql';
-import { TokenData } from '../../../src/graphql/resolvers/mutations';
-import { TOKEN_SIGNATURE } from '../../../.env/env';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { typeDefs, resolvers } from '../../../src/graphql';
+import { getTokenData } from '../../../src/components/utils/Auth/getTokenData';
 
 const serverConfig: Config = {
     typeDefs,
@@ -38,24 +36,12 @@ function setAuthData({
         email: string,
         isAuth: boolean = false;
     try {
-        console.log('TCL: cookies', req.cookies);
-        if (!req.headers.authorization) {
-            throw new Error('No authorization headers found!');
-        }
-        // 1. Get the authorization header. in the form of "Bearer eyJhbGciOiJIUzI1N..."
-        const authHeader = req.headers.authorization.split(' ')[1];
-
-        // 2. Verify the token is valid
-        const token = jwt.verify(
-            authHeader,
-            process.env.TOKEN_SIGNATURE || TOKEN_SIGNATURE
-        ) as TokenData;
-
+        const token = getTokenData(req);
         /**
-             3. If here, the token is valid - sets the userID, email, and isAuth 
-                keys on the context object which is then available in the GraphQL 
-                queries and mutations 'context' argument (3rd arg)
-             */
+         3. If here, the token is valid - sets the userID, email, and isAuth 
+            keys on the context object which is then available in the GraphQL 
+            queries and mutations 'context' argument (3rd arg)
+        */
         userID = token.userID;
         email = token.email;
         isAuth = Boolean(token.userID && token.email);

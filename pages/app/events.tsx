@@ -1,6 +1,5 @@
 import EventList from '../../src/components/ui/EventList';
 import { User } from '../../src/components/models/User/User';
-import router from 'next/router';
 
 interface IProps {
     user: User;
@@ -8,11 +7,6 @@ interface IProps {
 }
 
 function Events(props: IProps) {
-    // console.log('TCL: Events -> props', props);
-    // if (!props.user) {
-    //     process.browser && router.push('/app');
-    //     return null;
-    // }
     return (
         <EventList
             user={props.user}
@@ -21,8 +15,4 @@ function Events(props: IProps) {
     );
 }
 
-function requireAuth(component) {
-    return component;
-}
-
-export default requireAuth(Events);
+export default Events;

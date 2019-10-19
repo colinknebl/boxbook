@@ -3,7 +3,12 @@ import {
     UserCreateInput,
     User,
 } from '../prisma/generated/prisma-client';
-import { OrgEventFragment, UserFragment } from '../types/fragments';
+import {
+    OrgEventFragment,
+    UserFragment,
+    OrganizationFragment,
+    PersonFragment,
+} from '../types/fragments';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { TOKEN_SIGNATURE, PASSWORD_SALT_ROUNDS } from '../../../.env/env';
@@ -51,6 +56,18 @@ export interface LoginMutationReturnData {
 }
 
 export const Mutation = {
+    async deleteUser(
+        parent,
+        { data: { id } }: { data: { id: any } },
+        context: Context,
+        info
+    ) {
+        const deletedUser = await prisma.deleteUser({
+            id,
+        });
+        return deletedUser;
+    },
+
     async createUser(parent, { data }: CreateUserData, context: Context, info) {
         const hashedPassword = await bcrypt.hash(
             data.password,
@@ -90,17 +107,56 @@ export const Mutation = {
         info
     ): Promise<LoginMutationReturnData> {
         const fragment = `
-            fragment FullUser on User ${UserFragment}
+            fragment FullUserLogin on User {
+                id
+                name {
+                    first
+                    last
+                }
+                email
+                phone
+                image
+                username
+                password
+                organizations ${OrganizationFragment}
+                postCode
+                settings {
+                    id
+                }
+                isAdmin
+                friends {
+                    id
+                }
+                log {
+                    id
+                }
+                createdAt
+            }
         `;
         const user: User = await prisma
             .user({
                 email,
             })
             .$fragment(fragment);
+
+        const reserved = await prisma
+            .user({
+                email,
+            })
+            .reserved({
+                orderBy: 'date_ASC',
+                where: {
+                    date_gte: new Date().toISOString(),
+                },
+            })
+            .$fragment(OrgEventFragment);
+        console.log(user);
+        console.log(reserved);
+        user['reserved'] = reserved;
+
         if (!user) {
             throw new Error('User does not exist!');
         }
-        console.log('TCL: user', user);
 
         const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
@@ -133,7 +189,6 @@ export const Mutation = {
         context: Context,
         info
     ) {
-        console.log('TCL: context', context);
         const fragment = `
             fragment FullOrgEvent on OrgEvent ${OrgEventFragment}
         `;

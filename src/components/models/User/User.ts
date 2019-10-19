@@ -1,7 +1,8 @@
+import CookieParser from '../../utils/CookieParser';
 import { OrgEvent } from '../OrgEvent';
 import { Organization } from '../Organization';
 import { Person } from '../Person';
-import { GQLRequest } from '../../utils/GQLRequest/GQLRequest';
+import { DataRequest } from '../../utils/DataRequest/DataRequest';
 import { UserFragment } from '../../../graphql/types/fragments';
 import { LoginMutationReturnData } from '../../../graphql/resolvers/mutations';
 
@@ -17,8 +18,10 @@ interface INewUserData {
 }
 
 const UserQuery: string = `
-    query User($id: ID) {
-        user(id: $id) ${UserFragment}
+    query user($id: ID!) {
+        user(where: {
+            id: $id
+        }) ${UserFragment}
     }
 `;
 
@@ -134,41 +137,78 @@ export class User extends Person implements UserInterface {
     // ***** Static Methods ********************************************
 
     static async CreateUser(data: INewUserData): Promise<User> {
-        const req = new GQLRequest<{ createUser: User }>();
-        const res = await req.get({
+        const req = new DataRequest<{ createUser: any }>({
             query: User.CreateUserMutation,
             variables: data,
+            errorMessage: 'Error creating user!',
         });
-        return res.createUser;
+        const res = await req.fetch();
+        return res.data.createUser;
     }
 
     // *****************************************************************
 
     static async Fetch(userID: string) {
-        const req = new GQLRequest<any>();
-        const res = await req.get({
-            query: (User.UserQuery as unknown) as string,
-            variables: { id: userID },
+        const req = new DataRequest<{ user: any }>({
+            query: User.UserQuery,
+            variables: {
+                id: userID,
+            },
+            errorMessage: 'Error fetching user!',
         });
-        return res.user;
+        const res = await req.fetch();
+        return res.data.user;
     }
 
     // *****************************************************************
 
-    static async Login(email: string, password: string) {
-        const req = new GQLRequest<{ login: LoginMutationReturnData }>();
-        const res = await req.get({
+    static async Login(
+        email: string,
+        password: string
+    ): Promise<{ user: User; errors: Error[] }> {
+        let user: User;
+        const req = new DataRequest<{ login: LoginMutationReturnData }>({
             query: User.LoginMutation,
-            variables: {
-                email,
-                password,
-            },
+            variables: { email, password },
         });
+        const res = await req.fetch();
 
-        if (res && res.login) {
-            window.localStorage.setItem(User.TokenKey, res.login.token);
-            document.cookie = 'token=' + res.login.token;
-            return new User(res.login.user);
+        if (res.data) {
+            user = new User(res.data.login.user);
+            User.SetToken(res.data.login.token);
+        }
+
+        return {
+            user,
+            errors: res.errors,
+        };
+    }
+
+    // *****************************************************************
+
+    static Logout() {
+        try {
+            let cookieParser = new CookieParser();
+            // remove token from localstorage
+            window.localStorage.setItem(User.TokenKey, null);
+            // remove token from cookies
+            cookieParser.delete('token');
+        } catch (error) {
+            throw new Error('Error logging out: ' + error.message);
+        }
+    }
+
+    // *****************************************************************
+
+    static SetToken(token: string) {
+        try {
+            let cookieParser = new CookieParser();
+            // set token in localstorage
+            window.localStorage.setItem(User.TokenKey, token);
+            // set token as cookie
+            cookieParser.set('token', token);
+        } catch (error) {
+            throw new Error('Error setting token: ' + error.message);
         }
     }
 
@@ -192,6 +232,12 @@ export class User extends Person implements UserInterface {
 
     public getEvents(dates: Date[], selectedDay: number): OrgEvent[] {
         return this.activeOrganization.getEventsByDates(dates, selectedDay);
+    }
+
+    // *****************************************************************
+
+    public getInitials(): string {
+        return this.name.first.slice(0, 1) + this.name.last.slice(0, 1);
     }
 
     // *****************************************************************

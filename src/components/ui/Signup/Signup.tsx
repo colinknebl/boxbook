@@ -1,11 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import router from 'next/router';
+import Link from 'next/link';
+import { redirect } from '../../utils/redirect';
 
 import Input from '../Input';
 import Button from '../Button';
 
-import { StyledLogin } from '../Login';
+import { StyledLogin } from '../Login/Login';
 import { string } from 'prop-types';
 import { User } from '../../models/User/User';
 
@@ -22,6 +23,18 @@ const StyledPage = styled(StyledLogin)`
         padding: 5px 0;
         margin-top: 0;
     }
+
+    .login-link {
+        margin: 0;
+
+        a {
+            color: var(--primary-color);
+            transition: all var(--transition-duration) ease-in-out;
+            &:hover {
+                color: var(--primary-color--hover);
+            }
+        }
+    }
 `;
 
 interface IState {
@@ -35,16 +48,16 @@ interface IState {
     confirmPassword: string;
 }
 
-class CreateAccount extends React.PureComponent {
+class Signup extends React.PureComponent {
     state: IState = {
         errors: [],
-        firstName: 'Colin',
-        lastName: 'Knebl',
-        email: 'colin.knebl@outlook.com',
-        organizationCode: '149417',
-        username: 'colinknebl',
-        password: 'password',
-        confirmPassword: 'password',
+        firstName: '',
+        lastName: '',
+        email: '',
+        organizationCode: '',
+        username: '',
+        password: '',
+        confirmPassword: '',
     };
 
     constructor(props) {
@@ -63,7 +76,7 @@ class CreateAccount extends React.PureComponent {
 
         return (
             <StyledPage>
-                <h1>Create Account!</h1>
+                <h1>Sign Up</h1>
 
                 <fieldset>
                     <form>
@@ -175,7 +188,7 @@ class CreateAccount extends React.PureComponent {
 
                         <Button
                             text='Create Account'
-                            type='primary'
+                            type='secondary'
                             onClick={event => {
                                 event.preventDefault();
                                 this.setState({ errors: [] });
@@ -189,6 +202,13 @@ class CreateAccount extends React.PureComponent {
                     this.state.errors.map(error => (
                         <ErrorMessage key={error.message} error={error} />
                     ))}
+
+                <p className='login-link'>
+                    Already have an account?{' '}
+                    <Link href='/app/login'>
+                        <a>Log In</a>
+                    </Link>
+                </p>
             </StyledPage>
         );
     }
@@ -245,12 +265,14 @@ class CreateAccount extends React.PureComponent {
                     });
                 }
             });
-            console.log('TCL: privateasync_createAccount -> user', user);
             if (user && user.email && user.password) {
                 const loggedInUser = await User.Login(
                     user.email,
                     this.state.password
                 );
+                if (loggedInUser) {
+                    redirect(null, '/app/events');
+                }
             }
         }
     };
@@ -263,7 +285,7 @@ class CreateAccount extends React.PureComponent {
     }
 }
 
-export default CreateAccount;
+export default Signup;
 
 function ErrorMessage({ error }: { error: Error }) {
     return <p className='error-message'>{error.message}</p>;

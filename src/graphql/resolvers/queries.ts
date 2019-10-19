@@ -1,18 +1,41 @@
 import { prisma, Prisma, User } from '../prisma/generated/prisma-client';
-import { UserFragment } from '../types/fragments';
+import {
+    UserFragment,
+    OrganizationFragment,
+    PersonFragment,
+} from '../types/fragments';
 import { Context } from './mutations';
 
 export const Query = {
-    async user(parent, { id }: { id: string }, context: Context, info) {
-        const fragment = `
-            fragment FullUser on User ${UserFragment}
-        `;
+    async user(
+        parent,
+        args: { where: { id: string } },
+        context: Context,
+        info
+    ) {
+        // const fragment = `
+        //     fragment FullUserQuery on User ${UserFragment}
+        // `;
 
-        return await prisma
+        const user = await prisma
             .user({
-                id,
+                id: args.where.id,
             })
-            .$fragment(fragment);
+            .$fragment(UserFragment);
+
+        const reserved = await prisma
+            .user({
+                id: args.where.id,
+            })
+            .reserved({
+                where: {
+                    date_gte: new Date().toISOString(),
+                },
+            });
+
+        user['reserved'] = reserved;
+
+        return user;
     },
 
     async name(parent, { id }: { id: string }, context: Context, info) {
@@ -23,7 +46,7 @@ export const Query = {
 
     async users(parent, args, context: Context, info) {
         const fragment = `
-            fragment FullUser on User ${UserFragment}
+            fragment FullUserUsers on User ${UserFragment}
         `;
 
         return await prisma.users().$fragment(fragment);
