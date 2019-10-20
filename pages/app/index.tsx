@@ -51,7 +51,7 @@ class App extends React.PureComponent {
     render() {
         return (
             <StyledSection className='app-landing-page'>
-                <Link href='/app/create-account' shallow={true}>
+                <Link href='/app/signup' shallow={true}>
                     <StyledButton>Create Account</StyledButton>
                 </Link>
 
