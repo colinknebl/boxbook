@@ -32,7 +32,10 @@ class CookieParser implements CookierParserInterface {
     private _parseCookies(cookies: string[]) {
         return cookies.reduce((obj, cookie) => {
             const [key, val] = cookie.split('=');
-            obj[key] = val;
+            if (!key) {
+                return obj;
+            }
+            obj[key.trim()] = val.trim();
             return obj;
         }, {});
     }
