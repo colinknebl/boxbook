@@ -45,10 +45,10 @@ export const Query = {
     },
 
     async users(parent, args, context: Context, info) {
-        const fragment = `
-            fragment FullUserUsers on User ${UserFragment}
-        `;
+        // const fragment = `
+        //     fragment FullUserUsers on User ${UserFragment}
+        // `;
 
-        return await prisma.users().$fragment(fragment);
+        return await prisma.users().$fragment(UserFragment);
     },
 };

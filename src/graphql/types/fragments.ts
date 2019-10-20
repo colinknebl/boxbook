@@ -148,6 +148,23 @@ export const UserFragment = `{
     password
     reserved {
         id
+        date
+        name
+        hourDuration
+        image
+        createdAt
+        attendees {
+            id
+            name {
+                first
+                last
+            }
+            username
+            email
+        }
+        coordinator ${PersonFragment}
+        eventType 
+        organization ${OrganizationFragment}
     }
     organizations ${OrganizationFragment}
     postCode
