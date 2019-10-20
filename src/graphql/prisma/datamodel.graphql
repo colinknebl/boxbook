@@ -119,7 +119,7 @@ type User {
     organizations: [Organization] @relation(link: INLINE)
     postCode: String
     settings: UserSettings @relation(link: INLINE)
-    isAdmin: Boolean
+    isAdmin: Boolean @default(value: false)
     friends: [User]! @relation(link: INLINE)
     log: UserLog! @relation(link: INLINE)
     createdAt: DateTime! @createdAt
