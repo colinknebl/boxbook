@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import SingleEvent from './SingleEvent';
+import Link from 'next/link';
 import { OrgEvent } from '../../models/OrgEvent/OrgEvent';
 import { User } from '../../models/User/User';
 import { ReserveButtonText } from './ReserveButton';
@@ -15,12 +16,29 @@ interface IProps {
 const StyledEvents = styled.section`
     &.no-events {
         text-align: center;
+        a {
+            color: var(--tertiary-color);
+
+            &:hover {
+                color: var(--primary-color);
+            }
+        }
     }
 `;
 
 function Events({ events, user, onClick, viewing }: IProps) {
-    if (!events) {
-        return null;
+    if (!user) {
+        return (
+            <StyledEvents className='no-events'>
+                <p>
+                    Please{' '}
+                    <Link href='/app/login' shallow={true}>
+                        <a>log in</a>
+                    </Link>{' '}
+                    to view your events.
+                </p>
+            </StyledEvents>
+        );
     }
 
     if (events.length === 0) {
