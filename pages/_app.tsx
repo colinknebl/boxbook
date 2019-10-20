@@ -45,9 +45,6 @@ class MyApp extends App<IProps, IState> {
     render() {
         const { Component, pageProps } = this.props;
 
-        console.log('rendering page state', this.state);
-        console.log('rendering page props', this.props);
-
         return (
             <>
                 <GlobalStyles />
